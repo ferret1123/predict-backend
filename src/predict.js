@@ -44,24 +44,31 @@ const prediction = async(req, res) => {
         });
 
         streamBlob.on('finish', async() => {
-            const filename = blob.name.replaceAll('/input/\\', '');
+            const filename = blob.name.replaceAll('input/', '');
 
             try{
-                const getPredict = await axios.get(process.env.LINK_PREDICT_API, {
-                    filename: filename
-                });
+                const getPredict = await axios.get(`${process.env.LINK_PREDICT_API}?filename=${filename}`);
                 const predictPlant = getPredict.data;
 
-                const findPlant = await plant.fineOne({
-                    where: {
-                        nama: predictPlant.nama
-                    }
-                });
+                const findPlant = await plant(predictPlant.nama);
 
                 if(!findPlant){
                     const herbs = await plant.create(predictPlant);
                     return res.json(herbs);
                 }
+                // const findPlant = await plant.findOne({
+                //     attributes: [
+                //         ['nama', 'Nama Tanaman'],
+                //     ],
+                //     where: {
+                //         'Nama Tanaman': predictPlant.nama
+                //     }
+                // });
+
+                // if(!findPlant){
+                //     const herbs = await plant.create(predictPlant);
+                //     return res.json(herbs);
+                // }
 
                 res.json(findPlant);
             } catch(error){

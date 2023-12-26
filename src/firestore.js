@@ -2,27 +2,31 @@ const { Firestore } = require('@google-cloud/firestore')
 const firestore = new Firestore();
 
 const plant = async (name) => {
-   try{
+   try {
+      if (!name || typeof name !== 'string') {
+         throw new Error('Invalid name provided');
+      }
+
       const plantDoc = await firestore.collection('dataOutput').doc(name).get();
 
-      if(!plantDoc.exists){
-         return{
+      if (!plantDoc.exists) {
+         return {
             status: false
          };
       }
 
       const plantData = plantDoc.data();
-      return{
+      return {
          status: true,
          data: plantData
       };
-   } catch(error){
+   } catch (error) {
       console.error('Error while searching for plant: ', error);
-      return{
+      return {
          status: false,
          error: error.message
       };
    }
 };
 
-module.exports = {plant};
+module.exports = { plant };
