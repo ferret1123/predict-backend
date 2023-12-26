@@ -11,7 +11,7 @@ const storage = new Storage({
     }
 });
 
-const bucket = storage.bucket('plantherbs');
+const bucket = storage.bucket('plantherbs-bucket');
 
 const uuidv1 = uuid.v1();
 
@@ -44,10 +44,10 @@ const prediction = async(req, res) => {
         });
 
         streamBlob.on('finish', async() => {
-            const filename = blob.name.replaceAll('input/', '');
+            const filename = blob.name.replaceAll('/input/\\', '');
 
             try{
-                const getPredict = await axios.post(env.LINK_PREDICT_API, {
+                const getPredict = await axios.get(process.env.LINK_PREDICT_API, {
                     filename: filename
                 });
                 const predictPlant = getPredict.data;
